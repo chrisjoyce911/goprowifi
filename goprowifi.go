@@ -2,17 +2,13 @@ package goprowifi
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 )
 
 // Client ...
 type Client struct {
-	Protocol string
-	Host     string
-	Port     string
-	Base     string
+
 	// Use this switch to see all network communication.
 	Debug bool
 	// http interface can be used when testing
@@ -37,10 +33,6 @@ func NewClient(debug bool) *Client {
 
 	const API = "http://10.5.5.9/gp/gpControl/"
 
-	g.Host = "10.5.5.9"
-	g.Port = "80"
-	g.Protocol = "http"
-	g.Base = "gp/gpControl/"
 	g.Debug = debug
 
 	// set default http interface to use
@@ -49,14 +41,11 @@ func NewClient(debug bool) *Client {
 	return g
 }
 
-func (g *Client) genericRequest(url string, method string, body io.Reader) (bodyBytes []byte, statusCode int, err error) {
+func (g *Client) request(url string) (bodyBytes []byte, statusCode int, err error) {
 
-	API := fmt.Sprintf("http://10.5.5.9/gp/gpControl/%s", url)
+	fmt.Printf("[Debug] URL : %s\n", url)
 
-	fmt.Printf("[Debug] URL : %s\n", API)
-	fmt.Printf("[Debug] Reduest : %v\n", body)
-
-	req, err := http.NewRequest(method, API, body)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return
 	}
@@ -81,16 +70,4 @@ func (g *Client) genericRequest(url string, method string, body io.Reader) (body
 	fmt.Printf("[Debug] status : %d\n", statusCode)
 
 	return
-}
-
-func (g *Client) genericGET(url string) (bodyBytes []byte, statusCode int, err error) {
-	return g.genericRequest(url, "GET", nil)
-}
-
-func (g *Client) genericPOST(url string, body io.Reader) (bodyBytes []byte, statusCode int, err error) {
-	return g.genericRequest(url, "POST", body)
-}
-
-func (g *Client) getURL() string {
-	return fmt.Sprintf("%v://%v:%v/%s", g.Protocol, g.Host, g.Port, g.Base)
 }

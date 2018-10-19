@@ -538,15 +538,76 @@ type CurrentStatus struct {
 
 // CurrentSettings ...
 type CurrentSettings struct {
-	Num1  int `json:"1"`
-	Num2  int `json:"2"`
-	Num3  int `json:"3"`
-	Num4  int `json:"4"`
-	Num5  int `json:"5"`
-	Num6  int `json:"6"`
-	Num7  int `json:"7"`
-	Num8  int `json:"8"`
-	Num9  int `json:"9"`
+	Num1 int `json:"1"`
+
+	// 2 - Video Resolutions
+	// 	1 = 4K
+	// 	4 = 2.7K: http://10.5.5.9/gp/gpControl/setting/2/4
+	// 	6 = 2.7K 4:3: http://10.5.5.9/gp/gpControl/setting/2/6
+	// 	7 = 1440p: http://10.5.5.9/gp/gpControl/setting/2/7
+	// 	9 = 1080p: http://10.5.5.9/gp/gpControl/setting/2/9
+	// 	10 = 960p: http://10.5.5.9/gp/gpControl/setting/2/10
+	// 	12 = 720p: http://10.5.5.9/gp/gpControl/setting/2/12
+	// 	17 = WVGA: http://10.5.5.9/gp/gpControl/setting/2/17
+	VideoResolutions int `json:"2"`
+
+	// 3 - Frame Rate
+	// 	0 = 240fps:	http://10.5.5.9/gp/gpControl/setting/3/0
+	// 	1 = 120fps:	http://10.5.5.9/gp/gpControl/setting/3/1
+	// 	2 = 100fps:	http://10.5.5.9/gp/gpControl/setting/3/2
+	// 	3 = 90fps:	http://10.5.5.9/gp/gpControl/setting/3/3
+	// 	4 = 80fps:	http://10.5.5.9/gp/gpControl/setting/3/4
+	// 	5 = 60fps:	http://10.5.5.9/gp/gpControl/setting/3/5
+	// 	6 = 50fps:	http://10.5.5.9/gp/gpControl/setting/3/6
+	// 	7 = 48fps:	http://10.5.5.9/gp/gpControl/setting/3/7
+	// 	8 = 30fps:	http://10.5.5.9/gp/gpControl/setting/3/8
+	// 	9 = 25fps:	http://10.5.5.9/gp/gpControl/setting/3/9
+	FrameRate int `json:"3"`
+
+	// 4 - Field of View
+	// 	0 = Wide: http://10.5.5.9/gp/gpControl/setting/4/0
+	// 	1 = Medium: http://10.5.5.9/gp/gpControl/setting/4/1
+	// 	2 = Narrow: http://10.5.5.9/gp/gpControl/setting/4/2
+	// 	3 = SuperView: http://10.5.5.9/gp/gpControl/4/3
+	// 	4 = Linear: http://10.5.5.9/gp/gpControl/setting/4/4
+	FOV int `json:"4"`
+
+	// 5 - Video Timelapse Interval:
+	// 	0 = 0.5: http://10.5.5.9/gp/gpControl/setting/5/0
+	// 	1 = 1: http://10.5.5.9/gp/gpControl/setting/5/1
+	// 	2 = 2: http://10.5.5.9/gp/gpControl/setting/5/2
+	// 	3 = 5: http://10.5.5.9/gp/gpControl/setting/5/3
+	// 	4 = 10: http://10.5.5.9/gp/gpControl/setting/5/4
+	// 	5 = 30: http://10.5.5.9/gp/gpControl/setting/5/5
+	// 	6 = 60: http://10.5.5.9/gp/gpControl/setting/5/6
+	VideoTimelapseInterval int `json:"5"`
+
+	// 6 - Video Looping Duration:
+	// 	0 = Max: http://10.5.5.9/gp/gpControl/setting/6/0
+	// 	1 = 5Min: http://10.5.5.9/gp/gpControl/setting/6/1
+	// 	2 = 20Min: http://10.5.5.9/gp/gpControl/setting/6/2
+	// 	3 = 60Min: http://10.5.5.9/gp/gpControl/setting/6/3
+	// 	4 = 120Min: http://10.5.5.9/gp/gpControl/setting/6/4
+	VideoLoopingDuration int `json:"6"`
+
+	// 7 - Video+Photo Interval:
+	// 	1 = 5: http://10.5.5.9/gp/gpControl/setting/7/1
+	// 	2 = 10: http://10.5.5.9/gp/gpControl/setting/7/2
+	// 	3 = 30: http://10.5.5.9/gp/gpControl/setting/7/3
+	// 	4 = 60Min: http://10.5.5.9/gp/gpControl/setting/7/4
+	VideoPhotoInterval int `json:"7"`
+
+	// 8 - Low Light
+	// 	0 = OFF: http://10.5.5.9/gp/gpControl/setting/8/0
+	// 	1 = ON: http://10.5.5.9/gp/gpControl/setting/8/1
+	LowLight int `json:"8"`
+
+	// 9 - Spot Meter:
+	// 	0 = off: http://10.5.5.9/gp/gpControl/setting/9/0
+	// 	1 = on: http://10.5.5.9/gp/gpControl/setting/9/1
+	SpotMeter int `json:"9"`
+
+	// https://github.com/KonradIT/goprowifihack/blob/master/HERO5/HERO5-Commands.md
 	Num10 int `json:"10"`
 	Num11 int `json:"11"`
 	Num12 int `json:"12"`
@@ -640,7 +701,7 @@ type CurrentSettings struct {
 // http://10.5.5.9/gp/gpControl/status
 func (g *Client) GetCameraStatus() (status CurrentStatus, httpStatus int, err error) {
 
-	bodyBytes, httpStatus, err := g.genericGET("status")
+	bodyBytes, httpStatus, err := g.request("http://10.5.5.9/gp/gpControl/status")
 
 	reply := new(CameraStatus)
 	err = json.Unmarshal(bodyBytes, &reply)
