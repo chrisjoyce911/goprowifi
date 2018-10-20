@@ -2,6 +2,7 @@ package goprowifi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -34,7 +35,7 @@ type Files struct {
 	S              string `json:"s"`
 }
 
-// GetMediaList ist of the contents of the SD card
+// getMediaList ist of the contents of the SD card
 //
 // http://10.5.5.9:8080/gp/gpMediaList
 func (g *Client) getMediaList() (mediaList []*Media, httpStatus int, err error) {
@@ -42,51 +43,53 @@ func (g *Client) getMediaList() (mediaList []*Media, httpStatus int, err error) 
 	bodyBytes, httpStatus, err := g.request("http://10.5.5.9:8080/gp/gpMediaList")
 
 	reply := new(cameraMediaList)
-	err = json.Unmarshal(bodyBytes, &reply)
-	if err != nil {
-		err = fmt.Errorf("Can't unmarshal retrieve response %s", err)
-	}
 
-	for _, cm := range reply.Media {
-		for _, dm := range cm.Files {
-			nm := new(Media)
-			nm.Device = cm.Device
-			nm.EpochTimestamp = dm.EpochTimestamp
-			nm.FileName = dm.FileName
-			nm.Ls = dm.Ls
-			nm.S = dm.S
-			nm.MediaType = nm.FileName[len(nm.FileName)-3:]
-			mediaList = append(mediaList, nm)
+	if httpStatus == 200 {
+		err = json.Unmarshal(bodyBytes, &reply)
+		if err != nil {
+			err = fmt.Errorf("Can't unmarshal retrieve response %s", err)
 		}
+
+		for _, cm := range reply.Media {
+			for _, dm := range cm.Files {
+				nm := new(Media)
+				nm.Device = cm.Device
+				nm.EpochTimestamp = dm.EpochTimestamp
+				nm.FileName = dm.FileName
+				nm.Ls = dm.Ls
+				nm.S = dm.S
+				nm.MediaType = nm.FileName[len(nm.FileName)-3:]
+				mediaList = append(mediaList, nm)
+			}
+		}
+	} else {
+		err = errors.New(string(bodyBytes))
 	}
 
 	return
 }
 
-// Media List
-//http://10.5.5.9:8080/gp/gpMediaList
+// MediaList list of the contents of the SD card
+//
+func (g *Client) MediaList() (mediaList []*Media, err error) {
+	mediaList, _, _ = g.getMediaList()
+	return
+}
 
-// {
-//     "id": "3806895087272624399",
-//     "media": [
-//         {
-//             "d": "100GOPRO",
-//             "fs": [
-//                 {
-//                     "n": "GOPR1130.MP4",
-//                     "mod": "1539705058",
-//                     "ls": "11170499",
-//                     "s": "188100018"
-//                 },
-//                 {
-//                     "n": "GOPR1147.JPG",
-//                     "mod": "1539960090",
-//                     "s": "3843146"
-//                 }
-//             ]
-//         }
-//     ]
-// }
+// MediaPhotoList list of photos on the SD card
+//
+func (g *Client) MediaPhotoList() (mediaList []*Media, err error) {
+	allmedis, _, _ := g.getMediaList()
+
+	b := allmedis[:0]
+	for _, x := range allmedis {
+		if x.MediaType == "JPG" {
+			b = append(b, x)
+		}
+	}
+
+	return
+}
 
 // Media Thumbnail:
 // To get the thumbnail of a video: http://10.5.5.9/gp/gpMediaMetadata?p=100GOPRO/GOPR1148.MP4

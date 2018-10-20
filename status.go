@@ -529,7 +529,10 @@ type CurrentStatus struct {
 	Num67 int `json:"67"`
 	Num68 int `json:"68"`
 	Num69 int `json:"69"`
-	Num70 int `json:"70"`
+
+	// 70 - Battery Percentage
+	BatteryPercentage int `json:"70"`
+
 	Num71 int `json:"71"`
 	Num72 int `json:"72"`
 	Num73 int `json:"73"`
@@ -641,8 +644,27 @@ type CurrentSettings struct {
 	Num40 int `json:"40"`
 	Num41 int `json:"41"`
 	Num42 int `json:"42"`
-	Num43 int `json:"43"`
-	Num44 int `json:"44"`
+
+	// 43 - Primary modes
+	//	0 = Video: http://10.5.5.9/gp/gpControl/command/mode?p=0
+	//	1 = Photo: http://10.5.5.9/gp/gpControl/command/mode?p=1
+	//	2 = MultiShot: http://10.5.5.9/gp/gpControl/command/mode?p=2
+	PrimaryMode int `json:"43"`
+
+	// 44 - Secondary modes
+	// 	0 = Video (VIDEO): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=0&sub_mode=0
+	// 	1 = TimeLapse Video (VIDEO): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=0&sub_mode=1
+	// 	2 = Video + Photo (VIDEO): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=0&sub_mode=2
+	// 	3 = Looping (VIDEO): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=0&sub_mode=3
+
+	// 	1 = Single (PHOTO): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=1&sub_mode=1
+	// 	2 = Night (PHOTO): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=1&sub_mode=2
+
+	// 	0 = Burst (MultiShot): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=2&sub_mode=0
+	// 	1 = Timelapse (MultiShot): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=2&sub_mode=1
+	// 	2 = NightLapse (MultiShot): http://10.5.5.9/gp/gpControl/command/sub_mode?mode=2&sub_mode=2
+	SecondaryModes int `json:"44"`
+
 	Num45 int `json:"45"`
 	Num46 int `json:"46"`
 	Num47 int `json:"47"`
