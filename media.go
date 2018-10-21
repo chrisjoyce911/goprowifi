@@ -76,14 +76,14 @@ func (g *Client) MediaList() (mediaList []*Media, err error) {
 	return
 }
 
-// MediaPhotoList list of photos on the SD card
+// MediaTypeList list of a type of media on the SD card
 //
-func (g *Client) MediaPhotoList() (mediaList []*Media, err error) {
+func (g *Client) MediaTypeList(mediatype string) (mediaList []*Media, err error) {
 	allmedis, _, _ := g.getMediaList()
 
 	b := allmedis[:0]
 	for _, x := range allmedis {
-		if x.MediaType == "JPG" {
+		if x.MediaType == mediatype {
 			b = append(b, x)
 		}
 	}
